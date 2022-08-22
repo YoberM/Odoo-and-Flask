@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - CSS Responsive Table Layout</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+
+<div class="wrapper">
+<table style="width: 100%">
+  <tr>
+    <th style="width: 50%">
+  <div class="table">
+    <div class="row header">
+      <div class="cell">
+        Name
+      </div>
+      <div class="cell">
+        Age
+      </div>
+      <div class="cell">
+        Occupation
+      </div>
+<!--      <div class="cell">-->
+<!--        Location-->
+<!--      </div>-->
+    </div>
+    {{euclidiana|safe}}
+
+  </div>
+    </th>
+    <th style="width: 50%">
+  <div class="table">
+    <div class="row header">
+      <div class="cell">
+        Name
+      </div>
+      <div class="cell">
+        Age
+      </div>
+      <div class="cell">
+        Occupation
+      </div>
+<!--      <div class="cell">-->
+<!--        Location-->
+<!--      </div>-->
+    </div>
+    {{manhatan|safe}}
+
+  </div>
+    </th>
+
+  </tr>
+  <tr>
+    <td>
+      <div class="table">
+    <div class="row header blue">
+      <div class="cell">
+        Name
+      </div>
+      <div class="cell">
+        Age
+      </div>
+      <div class="cell">
+        Occupation
+      </div>
+<!--      <div class="cell">-->
+<!--        Location-->
+<!--      </div>-->
+    </div>
+    {{pearson|safe}}
+
+  </div>
+    </td>
+    <td>
+      <div class="table">
+    <div class="row header green">
+      <div class="cell">
+        Name
+      </div>
+      <div class="cell">
+        Age
+      </div>
+      <div class="cell">
+        Occupation
+      </div>
+<!--      <div class="cell">-->
+<!--        Location-->
+<!--      </div>-->
+    </div>
+    {{cosine|safe}}
+
+  </div>
+    </td>
+  </tr>
+</table>
+
+
+</div>
+<!-- partial -->
+  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+</body>
+</html>
