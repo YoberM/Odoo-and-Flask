@@ -2,17 +2,21 @@ from math import *
 import pandas as pd
 import numpy as np
 from time import time
+from getSQL import *
 
-ratingDf=pd.read_csv("Ratings.csv")
-moviesDf=pd.read_csv("Movies.csv")
+WriteData()
+
+ratingDf=pd.read_csv("tempRating.csv")
+moviesDf=pd.read_csv("tempMovie.csv")
 users=dict()
 
 arr=np.array(ratingDf.iloc[:,])
 arrMov=np.array(moviesDf.iloc[:,])
 
+
 #diccionario de rating
 for i in arr:
-    userId, movieId = int(i[0]), int(i[1])
+    userId, movieId = int(float(i[0])), int(float(i[1]))
     rating = float(i[2])
     if userId not in users:
         users[userId] = {movieId: rating}
@@ -25,9 +29,6 @@ for i in arrMov:
     movieId = int(i[0])
     movieTitle = i[1]
     movies[movieId] = movieTitle
-
-print("Completado")
-
 
 ## DIstancias
 def cosine(dicc1, dicc2):
@@ -106,6 +107,7 @@ def get_neighbors(users,id_test,distancia):
     for i in users:
         #evitar comparar con el mismo
         if (i!=id_test):
+
             dist = distancia(users[i],users[id_test])
             #si la distancia es valida
             if dist!=-100:
@@ -140,48 +142,6 @@ def knn(result, users, persona, vecinos, distancia, umbral):
             if contador == vecinos:
                 break
 
-#Nro de vecinos más cercanos, Función de Distancia (Manhattan, Euclides, Pearson, Coseno)
-#Id. ó nombre de usuario , Umbral
-#euclidean  manhathan  pearson  cosine
-persona = 580
-vecinos=15
-umbral=0
-
-result=dict()
-knn(result,users,persona,vecinos,euclidean,umbral)
-
-#Nro de vecinos más cercanos, Función de Distancia (Manhattan, Euclides, Pearson, Coseno)
-#Id. ó nombre de usuario , Umbral
-#euclidean  manhathan  pearson  cosine
-persona = 580
-vecinos=15
-umbral=0
-#580
-
-result=dict()
-knn(result,users,persona,vecinos,manhathan,umbral)
-
-#Nro de vecinos más cercanos, Función de Distancia (Manhattan, Euclides, Pearson, Coseno)
-#Id. ó nombre de usuario , Umbral
-#euclidean  manhathan  pearson  cosine
-persona = 580
-vecinos=10
-umbral=0
-#580
-
-result=dict()
-knn(result,users,persona,vecinos,pearson,umbral)
-
-#Nro de vecinos más cercanos, Función de Distancia (Manhattan, Euclides, Pearson, Coseno)
-#Id. ó nombre de usuario , Umbral
-#euclidean  manhathan  pearson  cosine
-persona = 580
-vecinos=10
-umbral=0
-#580
-
-result=dict()
-knn(result,users,persona,vecinos,cosine,umbral)
 
 
 def knn(result, users, persona, vecinos, distancia, umbral):
@@ -192,59 +152,43 @@ def knn(result, users, persona, vecinos, distancia, umbral):
     if distancia == euclidean or distancia == manhathan:
         for i in range(len(users.keys())):
             # if neighbors[i][1]>umbral:
-            result[neighbors[i][0] + 1] = neighbors[i][1]
+            result[neighbors[i][0] ] = neighbors[i][1]
             contador = contador + 1
             if contador == vecinos:
                 break
     else:
         for i in range(len(users.keys())):
             # if neighbors[i][1]>umbral:
-            result[neighbors[len(neighbors) - i - 1][0] + 1] = neighbors[len(neighbors) - i - 1][1]
+            result[neighbors[len(neighbors) - i - 1][0]] = neighbors[len(neighbors) - i - 1][1]
             contador = contador + 1
             if contador == vecinos:
                 break
 
+def getRecomendations(id,vecinos_num,umbral = 0):
+    persona = id
+    vecinos = vecinos_num
+    umbral = 0
 
-def recomendacion(users, persona, vecinos, distancia, umbral, nro_peliculas):
-    result = dict()
-    knn(result, users, persona, vecinos, distancia, umbral)
-    recom = list()
-    # halla los k vecinos mas cercanos
-    for peli in movies:
-        # calcula los factores de influecnia de los k vecinos sobre la pelicula peli de movies
-        calificacion = 0
-        total = 0
-        cantidad = 0
-        # sumatoria de distancia
-        for i in result:
-            if peli in users[i]:
-                total = total + result[i]
-                cantidad = cantidad + 1
-        # sumatoria de peso
-        for i in result:
-            if peli in users[i]:
-                calificacion = calificacion + result[i] * users[i][peli]
+    sendData = []
+    result=dict()
+    knn(result,users,persona,vecinos,euclidean,umbral)
+    result = dict(sorted(result.items(), key=lambda item: item[1],reverse=True))
+    sendData.append(result)
 
-        # puede no haber coincidencia ninguna, en ese caso total=0
-        if total != 0:
-            # si la recomendacion es de 2 o menos personas no tiene mucha validez
-            if cantidad > 2:
-                recom.append((peli, calificacion / total))
+    result=dict()
+    knn(result,users,persona,vecinos,manhathan,umbral)
+    result = dict(sorted(result.items(), key=lambda item: item[1],reverse=True))
+    sendData.append(result)
 
-    # ordenamos los valores recomendados para saber cual le gusta mas
-    recom.sort(key=lambda tup: tup[1])
-    i = 0
-    j = 0
-    while (i < len(recom) and j < nro_peliculas):
-        if recom[len(recom) - i - 1][1] > umbral:  # and recom[len(recom)-i-1][1]<4.99999
-            print(movies[recom[len(recom) - i - 1][0]] + " con puntaje de: " + str(recom[len(recom) - i - 1][1]))
-            j = j + 1
-        i = i + 1
+    result=dict()
+    knn(result,users,persona,vecinos,pearson,umbral)
+    result = dict(sorted(result.items(), key=lambda item: item[1],reverse=True))
+    sendData.append(result)
 
-#euclidean  manhathan  pearson  cosine
-persona = 580
-vecinos=7
-umbral=0
-nro_peliculas=15
-recomendacion(users,persona,vecinos,euclidean,umbral,nro_peliculas)
+    result=dict()
+    knn(result,users,persona,vecinos,cosine,umbral)
+    result = dict(sorted(result.items(), key=lambda item: item[1],reverse=True))
+    sendData.append(result)
 
+
+    return  sendData
